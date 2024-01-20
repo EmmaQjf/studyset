@@ -1,8 +1,8 @@
-const wordCtrl = require('../controllers/wordcontroller')
+const wordCtrl = require('../controllers/wordController')
 const express = require('express')
 const router = express.Router()
 
-
+//INDUCES    EDIT, NEW(FRONT-END)  IDUCS --API(BACKEND)
 router.get('/', wordCtrl.index) // grab all words
 router.post('/', wordCtrl.create) // create a new word
 router.put('/:id', wordCtrl.update) // find the word and change it.
