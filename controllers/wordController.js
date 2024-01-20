@@ -1,6 +1,6 @@
 const Word = require('../models/word')
 const bcrypt = require('bcrypt')
-const token = require('jasonwebtoken')
+const token = require('jsonwebtoken')
 
 
 
@@ -51,8 +51,9 @@ exports.create = async function create(req, res) {
 exports.update = async function update(req, res) {
     // update a word
     try {
-        await Word.findOneAndUpdate({_id: req.params.id}, req.body, {new: true})//...req.body visually reminds them that they are sending an object 
+       const updatedWord = await Word.findOneAndUpdate({_id: req.params.id}, req.body, {new: true})//...req.body visually reminds them that they are sending an object 
         //{returnDocument='before'} also works. instead of {new: true}
+        res.status(200).json(updatedWord)
 
     } catch (error) {
         res.status(400).json({msg: error.message})
