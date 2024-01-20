@@ -84,9 +84,9 @@ exports.destroy = async function destroy(req, res) {
 exports.show = async function show (req, res) {
     // display a word
     try {
-
+        const foundWord = await Word.findOne({_id: req.params.id})
+        res.status(200).json(foundWord)
     } catch (error) {
-        
+        res.status(400).json({msg: error.message}) 
     }
-    
 }
