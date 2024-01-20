@@ -23,7 +23,7 @@ let mongoServer // use it in two functions: afterAll and beforeAll
 
 beforeAll(async () => {
     mongoServer = await MongoMemoryServer.create() // create a server, same as go to the mongoDBAtlas and create a cluster
-    await mongoose.connect(mongoServer.getUri(),{useNewUrlParser: true, useUnifiedTopology: true})
+    await mongoose.connect(mongoServer.getUri())
 }) //before all the tests run, do something 
 
 afterAll(async () => {
@@ -51,4 +51,47 @@ describe("test words endpoint for a RESTFUL JSON API", () => {
             expect(response.body[i]).toHaveProperty('createdAt')
         }
     })
+
+    test('it should create a new word', async() => {
+
+        const response = await request(app).post('/words').send({
+            pinyin: "wo", hanzi: "我", meaning: "I", picked: false
+        })
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body.pinyin).toEqual('wo')
+        expect(response.body.hanzi).toEqual('我')
+        expect(response.body.meaning).toEqual('I')
+        expect(response.body.picked).toEqual(false)
+    })
+
+    test ('it should update a word', async() => {
+        const word = await Word.create({pinyin: "wo", hanzi: "我", meaning: "I", picked: false})
+        const response = await request(app).put(`/words/${word._id}`).send({
+         picked: true
+        })
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body.picked).toEqual(true)
+
+    })
+
+    test('It should show the word', async() => {
+        const word = await Word.create({pinyin: "wo", hanzi: "我", meaning: "I", picked: true})
+        const response = await request(app).get(`/words/${word._id}`)
+        expect(response.statusCode).toBe(200)
+        expect(response.body.picked).toBeTruthy
+
+    })
+
+    test('It should delete the word', async() => {
+        const word = await Word.create({pinyin: "wo", hanzi: "我", meaning: "I", picked: false})
+        const response =await request(app).delete(`/words/${word._id}`)
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toHaveProperty('msg')
+        expect(response.body.msg).toEqual(`The word with the Id of ${word._id} was deleted from the MongoDB database, no further action necessary`)
+        
+  })
+
 })
